@@ -1,0 +1,60 @@
+name: signet
+
+services:
+  knots:
+    image: 1maa/bitcoin:v26.1.knots20240325
+    command: -conf=/etc/knots.conf
+    volumes:
+      - ./knots.conf:/etc/knots.conf
+      - knots_data:/home/bitcoin/.bitcoin
+
+  electrs:
+    image: 1maa/electrs:latest
+    command: /usr/local/bin/electrs --conf /etc/electrs.conf
+    ports:
+      - 127.0.0.1:60601:60601
+    volumes:
+      - ./electrs.conf:/etc/electrs.conf
+
+  mempool-web:
+    image: mempool/frontend:v3.0.0-dev4
+    environment:
+      - FRONTEND_HTTP_PORT=8080
+      - BACKEND_MAINNET_HTTP_HOST=mempool-api
+    ports:
+      - 127.0.0.1:8080:8080
+
+  mempool-api:
+    image: mempool/backend:v3.0.0-dev4
+    environment:
+      - CORE_RPC_HOST=knots
+      - CORE_RPC_PASSWORD=knots
+      - CORE_RPC_PORT=38332
+      - CORE_RPC_USERNAME=knots
+      - DATABASE_DATABASE=mempool
+      - DATABASE_ENABLED=true
+      - DATABASE_HOST=mariadb
+      - DATABASE_PASSWORD=mempool
+      - DATABASE_USERNAME=mempool
+      - ELECTRUM_HOST=electrs
+      - ELECTRUM_PORT=60601
+      - ELECTRUM_TLS_ENABLED=false
+      - MEMPOOL_BACKEND=electrum
+      - MEMPOOL_NETWORK=signet
+      - STATISTICS_ENABLED=true
+
+  mariadb:
+    image: mariadb:11.3
+    environment:
+      - MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=true
+      - MARIADB_DATABASE=mempool
+      - MARIADB_PASSWORD=mempool
+      - MARIADB_USER=mempool
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    ports:
+      - 127.0.0.1:3306:3306
+
+volumes:
+  knots_data:
+  mariadb_data:
