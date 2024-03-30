@@ -4,25 +4,29 @@ services:
   knots:
     image: 1maa/bitcoin:v26.1.knots20240325
     command: -conf=/etc/knots.conf
+    restart: on-failure
     volumes:
       - ./knots.conf:/etc/knots.conf
       - knots_data:/home/bitcoin/.bitcoin
 
   electrs:
     image: 1maa/electrs:latest
-    command: /usr/local/bin/electrs --conf /etc/electrs.conf
+    command: --conf /etc/electrs.conf
     ports:
       - 127.0.0.1:60601:60601
+    restart: on-failure
     volumes:
       - ./electrs.conf:/etc/electrs.conf
+      - electrs_data:/var/lib/electrs
 
   mempool-web:
     image: mempool/frontend:v3.0.0-dev4
     environment:
-      - FRONTEND_HTTP_PORT=8080
       - BACKEND_MAINNET_HTTP_HOST=mempool-api
+      - FRONTEND_HTTP_PORT=8080
     ports:
       - 127.0.0.1:8080:8080
+    restart: on-failure
 
   mempool-api:
     image: mempool/backend:v3.0.0-dev4
@@ -41,7 +45,8 @@ services:
       - ELECTRUM_TLS_ENABLED=false
       - MEMPOOL_BACKEND=electrum
       - MEMPOOL_NETWORK=signet
-      - STATISTICS_ENABLED=true
+      - STATISTICS_ENABLED=false
+    restart: on-failure
 
   mariadb:
     image: mariadb:11.3
@@ -54,7 +59,9 @@ services:
       - mariadb_data:/var/lib/mysql
     ports:
       - 127.0.0.1:3306:3306
+    restart: on-failure
 
 volumes:
+  electrs_data:
   knots_data:
   mariadb_data:
