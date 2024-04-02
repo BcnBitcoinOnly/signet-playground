@@ -13,18 +13,26 @@ Docker Compose version v2.25.0
 
 ## Setup
 
-Start Bitcoin, Electrs and MariaDB first and follow the logs.
-Should only take a few minutes, the Signet datadir is just 1.4 GB at the time of writing.
+Start Knots, Electrs and MariaDB.
+Since Knots is booting in custom signet mode Knots and Electrs will finish their setup almost immediately, as there is no blockchain to download.
 
 ```bash
 $ docker compose up -d knots electrs mariadb
-$ docker compose logs -f
 ```
 
-Once the Electrs backend completes its sync, start the mempool containers:
+Now run a one-time process that will store in Knots' wallet the private key that is used for the signet challenge:
 
 ```bash
-$ docker compose up -d mempool-api mempool-web
+$ docker compose run --rm wallet-setup
+{
+  "name": "BBO"
+}
+```
+
+With the private key stored in Knots you can now start the miner and mempool processes:
+
+```bash
+$ docker compose up -d miner mempool-api mempool-web
 ```
 
 ## Testing
@@ -39,3 +47,12 @@ Connect your Sparrow Wallet to Electrs:
 
 1. Tools > Restart in Network > Signet
 2. File > Preferences > Server > Private Electrum > localhost:60601, no SSL, no Tor proxy.
+
+
+## Clean Up
+
+Stop and remove all containers and data volumes with the usual Docker Compose command:
+
+```bash
+$ docker compose down -v
+```

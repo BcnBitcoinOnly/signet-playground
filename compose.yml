@@ -9,6 +9,34 @@ services:
       - ./knots.conf:/etc/knots.conf
       - knots_data:/home/bitcoin/.bitcoin
 
+  wallet-setup:
+    image: 1maa/bitcoin:v26.1.knots20240325
+    environment:
+      - PRIVATE_KEY=cRWA13VYwVPgkUTGMTxjeoLvsFd9TnH8BYQtyMVpjsn3N5SSitEg
+      - RPC_ADDR=knots
+      - RPC_PWD=knots
+      - RPC_USER=knots
+      - WALLET_NAME=BBO
+    entrypoint:
+      - sh
+      - -c
+      - |
+        bitcoin-cli -rpcuser=$${RPC_USER} -rpcpassword=$${RPC_PWD} -rpcconnect=$${RPC_ADDR} -signet -named createwallet wallet_name=$${WALLET_NAME} descriptors=false
+        bitcoin-cli -rpcuser=$${RPC_USER} -rpcpassword=$${RPC_PWD} -rpcconnect=$${RPC_ADDR} -signet -named importprivkey $${PRIVATE_KEY}
+
+  miner:
+    image: 1maa/signet-miner:latest
+    environment:
+      - MINER_ADDRESS=mty3Xnn8JhUAxNN9kzX33eCD3e5zZCnQWJ
+      - MINING_DIFFICULTY=1d00ffff
+      - RPC_ADDR=knots
+      - RPC_PWD=knots
+      - RPC_USER=knots
+    entrypoint:
+      - sh
+      - -c
+      - miner --cli="bitcoin-cli -rpcuser=$${RPC_USER} -rpcpassword=$${RPC_PWD} -rpcconnect=$${RPC_ADDR}" generate --address $${MINER_ADDRESS} --grind-cmd="bitcoin-util grind" --nbits=$${MINING_DIFFICULTY} --ongoing
+
   electrs:
     image: 1maa/electrs:latest
     command: --conf /etc/electrs.conf
