@@ -1,6 +1,6 @@
 # Signet Playground
 
-Syncs with the global Signet for now, but the goal is to run a private Signet network.
+A dockerized, self-contained Bitcoin [Signet network](https://en.bitcoin.it/wiki/Signet) to study how it works.
 
 ## Requirements
 
@@ -56,3 +56,18 @@ Stop and remove all containers and data volumes with the usual Docker Compose co
 ```bash
 $ docker compose down -v
 ```
+
+
+# References
+
+## Guides
+
+* [BIP-325: Signet](https://bips.xyz/325)
+* [Mempool Docker installation](https://github.com/mempool/mempool/blob/master/docker/README.md)
+* [Custom Signet Tutorial](https://en.bitcoin.it/wiki/Signet#Custom_Signet)
+
+## Docker images
+
+* [1maa/bitcoin:v26.1.knots20240325](https://github.com/BcnBitcoinOnly/docker-knots/blob/master/Dockerfile)
+* [1maa/signet-miner:latest](https://github.com/1ma/dockertronics/blob/master/bitcoin/signet-miner/Dockerfile)
+* [1maa/electrs:latest](https://github.com/1ma/dockertronics/blob/master/electrs/Dockerfile)
