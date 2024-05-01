@@ -36,6 +36,7 @@ services:
       - sh
       - -c
       - miner --cli="bitcoin-cli -rpcuser=$${RPC_USER} -rpcpassword=$${RPC_PWD} -rpcconnect=$${RPC_ADDR}" generate --address $${REWARDS_BTC_ADDRESS} --grind-cmd="bitcoin-util grind" --nbits=$${MINING_DIFFICULTY} --ongoing
+    restart: on-failure
 
   electrs:
     image: 1maa/electrs:latest
@@ -89,7 +90,25 @@ services:
       - 127.0.0.1:3306:3306
     restart: on-failure
 
+  mongo:
+    image: mongo:7.0
+    restart: on-failure
+    volumes:
+      - mongo_data:/data
+
+  faucet:
+    image: 1maa/signet-faucet:latest
+    environment:
+      - BITCOIND_HOST=knots
+      - BITCOIND_USER=knots
+      - BITCOIND_PASS=knots
+      - MONGODB_HOST=mongo
+    ports:
+      - 127.0.0.1:8123:8123
+    restart: on-failure
+
 volumes:
   electrs_data:
   knots_data:
   mariadb_data:
+  mongo_data:
