@@ -51,11 +51,11 @@ Connect your Sparrow Wallet to Electrs:
 
 ### bitcoin-cli
 
-Interact directly with the node via the command line by entering into the `knots` container and running `bitcoin-cli` with appropriate credentials:
+Interact directly with the node via the command line by entering into the `knots` container and running `bitcoin-cli`:
 
 ```shell
 $ docker compose exec -it knots sh -l
-$ bitcoin-cli -signet -rpcuser=knots -rpcpassword=knots -getinfo
+$ bitcoin-cli -getinfo
 Chain: signet
 Blocks: 101
 Headers: 101
