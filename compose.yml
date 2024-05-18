@@ -27,7 +27,6 @@ services:
   miner:
     image: 1maa/signet-miner:latest
     environment:
-      - MINING_DIFFICULTY=1d00ffff
       - REWARDS_BTC_ADDRESS=mty3Xnn8JhUAxNN9kzX33eCD3e5zZCnQWJ
       - RPC_ADDR=knots
       - RPC_PWD=knots
@@ -35,7 +34,7 @@ services:
     entrypoint:
       - sh
       - -c
-      - miner --cli="bitcoin-cli -rpcuser=$${RPC_USER} -rpcpassword=$${RPC_PWD} -rpcconnect=$${RPC_ADDR}" generate --address $${REWARDS_BTC_ADDRESS} --grind-cmd="bitcoin-util grind" --nbits=$${MINING_DIFFICULTY} --ongoing
+      - miner --cli="bitcoin-cli -rpcuser=$${RPC_USER} -rpcpassword=$${RPC_PWD} -rpcconnect=$${RPC_ADDR}" generate --address $${REWARDS_BTC_ADDRESS} --grind-cmd="bitcoin-util grind" --min-nbits --ongoing
     restart: on-failure
 
   electrs:
