@@ -97,7 +97,7 @@ $ docker compose down -v
 
 ## Docker images
 
-* [1maa/bitcoin:v26.1.knots20240325](https://github.com/BcnBitcoinOnly/docker-knots/blob/master/Dockerfile)
+* [1maa/bitcoin:v26.1.knots20240513](https://github.com/BcnBitcoinOnly/docker-knots/blob/master/Dockerfile)
 * [1maa/signet-faucet:latest](https://github.com/1ma/dockertronics/blob/master/bitcoin/signet-faucet/Dockerfile)
 * [1maa/signet-miner:latest](https://github.com/1ma/dockertronics/blob/master/bitcoin/signet-miner/Dockerfile)
 * [1maa/electrs:latest](https://github.com/1ma/dockertronics/blob/master/electrs/Dockerfile)
