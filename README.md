@@ -13,11 +13,11 @@ Docker Compose version v2.25.0
 
 ## Setup
 
-Start Knots, Electrs, MariaDB and MongoDB.
+Start Knots, Electrs, MariaDB, Redis and the Faucet website.
 Since Knots is booting in custom signet mode Knots and Electrs will finish their setup almost immediately, as there is no blockchain to download.
 
 ```bash
-$ docker compose up -d knots electrs mariadb mongo
+$ docker compose up -d knots electrs mariadb redis faucet
 ```
 
 Now run a one-time process that will store in Knots' wallet the private key that is used for the signet challenge:
@@ -29,10 +29,10 @@ $ docker compose run --rm wallet-setup
 }
 ```
 
-With the private key stored in Knots you can now start the faucet, miner and mempool processes:
+With the private key stored in Knots you can now start the miner and mempool processes:
 
 ```bash
-$ docker compose up -d faucet miner mempool-api mempool-web
+$ docker compose up -d miner mempool-api mempool-web
 ```
 
 ## Testing
@@ -51,11 +51,10 @@ Connect your Sparrow Wallet to Electrs:
 
 ### bitcoin-cli
 
-Interact directly with the node via the command line by entering into the `knots` container and running `bitcoin-cli`:
+Interact directly with the node via the command line by running the `bitcoin-cli` of the `knots` container:
 
 ```shell
-$ docker compose exec -it knots sh -l
-$ bitcoin-cli -getinfo
+$ docker compose exec knots bitcoin-cli -getinfo
 Chain: signet
 Blocks: 101
 Headers: 101
@@ -98,6 +97,6 @@ $ docker compose down -v
 ## Docker images
 
 * [1maa/bitcoin:v26.1.knots20240513](https://github.com/BcnBitcoinOnly/docker-knots/blob/master/Dockerfile)
-* [1maa/signet-faucet:latest](https://github.com/1ma/dockertronics/blob/master/bitcoin/signet-faucet/Dockerfile)
+* [1maa/bbo-faucet:latest](https://github.com/BcnBitcoinOnly/bbo-faucet/blob/master/Dockerfile)
 * [1maa/signet-miner:latest](https://github.com/1ma/dockertronics/blob/master/bitcoin/signet-miner/Dockerfile)
 * [1maa/electrs:latest](https://github.com/1ma/dockertronics/blob/master/electrs/Dockerfile)

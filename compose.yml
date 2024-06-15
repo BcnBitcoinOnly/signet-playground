@@ -89,25 +89,28 @@ services:
       - 127.0.0.1:3306:3306
     restart: on-failure
 
-  mongo:
-    image: mongo:7.0
+  redis:
+    image: redis:7-alpine
     restart: on-failure
     volumes:
-      - mongo_data:/data
+      - redis_data:/data
 
   faucet:
-    image: 1maa/signet-faucet:latest
+    image: 1maa/bbo-faucet:latest
     environment:
-      - BITCOIND_HOST=knots
-      - BITCOIND_USER=knots
-      - BITCOIND_PASS=knots
-      - MONGODB_HOST=mongo
+      - FAUCET_BITCOIN_RPC_USER=knots
+      - FAUCET_BITCOIN_RPC_PASS=knots
+      - FAUCET_NAME=BBO Signet Playground
+      - FAUCET_MAX_ONE_TIME_BTC=50.0
+      - FAUCET_USER_SESSION_TTL=2
+      - FAUCET_GLOBAL_SESSION_TTL=2
+      - FAUCET_MEMPOOL_URL=http://localhost:8080
     ports:
-      - 127.0.0.1:8123:8123
+      - 127.0.0.1:8123:8080
     restart: on-failure
 
 volumes:
   electrs_data:
   knots_data:
   mariadb_data:
-  mongo_data:
+  redis_data:
