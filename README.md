@@ -1,15 +1,17 @@
 # Signet Playground
 
 A dockerized, self-contained Bitcoin [Signet network](https://en.bitcoin.it/wiki/Signet) to study how it works.
+It consists of:
+
+* Signet node
+* Signet miner
+* [Electrs](https://github.com/romanz/electrs) server
+* [Mempool](https://github.com/mempool/mempool) explorer
+* [Faucet](https://github.com/BcnBitcoinOnly/bbo-faucet) website
 
 ## Requirements
 
-Recent Docker version with the Compose v2 plugin.
-
-```bash
-$ docker compose version
-Docker Compose version v2.25.0
-```
+Recent Docker version with the Compose v2 plugin (i.e. `docker compose` instead of `docker-compose`).
 
 ## Setup
 
@@ -96,7 +98,7 @@ $ docker compose down -v
 
 ## Docker images
 
-* [1maa/bitcoin:v26.1.knots20240513](https://github.com/BcnBitcoinOnly/docker-knots/blob/master/Dockerfile)
+* [1maa/bitcoin:v27.1.knots20240621](https://github.com/BcnBitcoinOnly/docker-knots/blob/master/Dockerfile)
 * [1maa/bbo-faucet:latest](https://github.com/BcnBitcoinOnly/bbo-faucet/blob/master/Dockerfile)
 * [1maa/signet-miner:latest](https://github.com/1ma/dockertronics/blob/master/bitcoin/signet-miner/Dockerfile)
 * [1maa/electrs:latest](https://github.com/1ma/dockertronics/blob/master/electrs/Dockerfile)

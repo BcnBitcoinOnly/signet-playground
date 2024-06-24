@@ -2,7 +2,7 @@ name: signet
 
 services:
   knots:
-    image: 1maa/bitcoin:v26.1.knots20240513
+    image: 1maa/bitcoin:v27.1.knots20240621
     command: -conf=/home/bitcoin/.bitcoin/bitcoin.conf
     restart: on-failure
     volumes:
@@ -10,7 +10,7 @@ services:
       - knots_data:/home/bitcoin/.bitcoin
 
   wallet-setup:
-    image: 1maa/bitcoin:v26.1.knots20240513
+    image: 1maa/bitcoin:v27.1.knots20240621
     environment:
       - PRIVATE_KEY=cRWA13VYwVPgkUTGMTxjeoLvsFd9TnH8BYQtyMVpjsn3N5SSitEg
       - RPC_ADDR=knots
