@@ -12,29 +12,32 @@ services:
   wallet-setup:
     image: 1maa/bitcoin:v27.1.knots20240621
     environment:
-      - PRIVATE_KEY=cRWA13VYwVPgkUTGMTxjeoLvsFd9TnH8BYQtyMVpjsn3N5SSitEg
       - RPC_ADDR=knots
-      - RPC_PWD=knots
-      - RPC_USER=knots
       - WALLET_NAME=BBO
     entrypoint:
       - sh
+      - -x
       - -c
       - |
-        bitcoin-cli -rpcuser=$${RPC_USER} -rpcpassword=$${RPC_PWD} -rpcconnect=$${RPC_ADDR} -signet -named createwallet wallet_name=$${WALLET_NAME} descriptors=false
-        bitcoin-cli -rpcuser=$${RPC_USER} -rpcpassword=$${RPC_PWD} -rpcconnect=$${RPC_ADDR} -signet -named importprivkey $${PRIVATE_KEY}
+        bitcoin-cli -rpcconnect=$${RPC_ADDR} -named createwallet wallet_name=$${WALLET_NAME} blank=true avoid_reuse=true load_on_startup=true
+        bitcoin-cli -rpcconnect=$${RPC_ADDR} -named importdescriptors requests='[{"desc":"tr(tprv8ZgxMBicQKsPdksbPS6u4aLDgjkt5LWM3vDscWSQKCTPsgKiekL3XiTb5HUHgyyr6e3pTn4JUcZUnPdAbbp3qtUmwmvAYwJHrJQiPMBMpum/86h/1h/0h/0/*)#ale2lp6q","timestamp":"now","active":true,"internal":false}]'
+        bitcoin-cli -rpcconnect=$${RPC_ADDR} -named importdescriptors requests='[{"desc":"tr(tprv8ZgxMBicQKsPdksbPS6u4aLDgjkt5LWM3vDscWSQKCTPsgKiekL3XiTb5HUHgyyr6e3pTn4JUcZUnPdAbbp3qtUmwmvAYwJHrJQiPMBMpum/86h/1h/0h/1/*)#vtutz52c","timestamp":"now","active":true,"internal":true}]'
+        bitcoin-cli -rpcconnect=$${RPC_ADDR} -named importdescriptors requests='[{"desc":"tr(tprv8ZgxMBicQKsPdksbPS6u4aLDgjkt5LWM3vDscWSQKCTPsgKiekL3XiTb5HUHgyyr6e3pTn4JUcZUnPdAbbp3qtUmwmvAYwJHrJQiPMBMpum/86h/1h/0h/2/*)#k7ngvzne","timestamp":"now","active":false,"internal":true}]'
+    volumes:
+      - ./knots.conf:/home/bitcoin/.bitcoin/bitcoin.conf
 
   miner:
     image: 1maa/signet-miner:latest
     environment:
-      - REWARDS_BTC_ADDRESS=mty3Xnn8JhUAxNN9kzX33eCD3e5zZCnQWJ
+      - REWARDS_DESCRIPTOR=tr(tprv8ZgxMBicQKsPdksbPS6u4aLDgjkt5LWM3vDscWSQKCTPsgKiekL3XiTb5HUHgyyr6e3pTn4JUcZUnPdAbbp3qtUmwmvAYwJHrJQiPMBMpum/86h/1h/0h/2/*)#k7ngvzne
       - RPC_ADDR=knots
       - RPC_PWD=knots
       - RPC_USER=knots
     entrypoint:
       - sh
+      - -x
       - -c
-      - miner --cli="bitcoin-cli -rpcuser=$${RPC_USER} -rpcpassword=$${RPC_PWD} -rpcconnect=$${RPC_ADDR}" generate --address $${REWARDS_BTC_ADDRESS} --grind-cmd="bitcoin-util grind" --min-nbits --ongoing
+      - miner --cli="bitcoin-cli -rpcuser=$${RPC_USER} -rpcpassword=$${RPC_PWD} -rpcconnect=$${RPC_ADDR}" generate --descriptor $${REWARDS_DESCRIPTOR} --grind-cmd="bitcoin-util grind" --min-nbits --ongoing
     restart: on-failure
 
   electrs:

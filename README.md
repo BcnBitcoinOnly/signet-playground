@@ -95,6 +95,8 @@ $ docker compose down -v
 * [BIP-325: Signet](https://bips.xyz/325)
 * [Mempool Docker installation](https://github.com/mempool/mempool/blob/master/docker/README.md)
 * [Custom Signet Tutorial](https://en.bitcoin.it/wiki/Signet#Custom_Signet)
+* [How to import an xpriv to a descriptor wallet in bitcoin core?](https://bitcointalk.org/index.php?topic=5483885.msg63602317#msg63602317)
+* [Signet mining is not possible when using descriptor wallet?](https://github.com/bitcoin/bitcoin/issues/28911)
 
 ## Docker images
 
