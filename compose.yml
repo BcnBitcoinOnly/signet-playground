@@ -111,6 +111,7 @@ services:
       - FAUCET_USER_SESSION_TTL=2
       - FAUCET_GLOBAL_SESSION_TTL=2
       - FAUCET_MEMPOOL_URL=http://localhost:8080
+      - FAUCET_FEE_RATE=0.0
     ports:
       - 127.0.0.1:8123:8080
     restart: on-failure
