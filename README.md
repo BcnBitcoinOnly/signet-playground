@@ -88,6 +88,39 @@ $ docker compose down -v
 ```
 
 
+## Wallet Organization
+
+The `wallet-setup` step has been carefully designed to create a wallet with these characteristics:
+
+* It derives Taproot addresses.
+* The miner has a fresh address for each coinbase reward.
+* The wallet itself can still be used as a regular wallet from the command line.
+
+By default, the `createwallet` command populates the wallet with 2 descriptors of each single-signature type (P2PKH, Nested SegWit, P2WPKH and P2TR).
+However, we pass the `blank=true` modifier to create an empty wallet with no descriptors in order to control how we set it up.
+
+We then import 3 different Taproot descriptors based on the same master private key.
+The first two are the usual pair of descriptors for receiving and change addresses.
+The third one is non-standard, and is only meant to be used by the miner process.
+That's why it's marked as internal and inactive.
+
+| Descriptor use case | Derivation path | Internal | Active  |
+|---------------------|-----------------|----------|---------|
+| Receiving addresses | `86h/1h/0h/0/*` | `false`  | `true`  |
+| Change addresses    | `86h/1h/0h/1/*` | `true`   | `true`  |
+| Mining rewards      | `86h/1h/0h/2/*` | `true`   | `false` |
+
+The mining script will send each reward to addresses from the third descriptor corresponding to the block height, so the reward for block 123 will go to address `86h/1h/0h/2/123` and so on.
+Bitcoin Knots is capable of spending UTXOs belonging to any of the three descriptors, but when sending bitcoin to itself it will generally do it an address of the first descriptor.
+Similarly, it will use addresses from the second descriptor as change addresses.
+
+If we didn't have a third descriptor for the mining rewards, addresses retrieved manually with `bitcoin-cli getnewaddress` would
+eventually be reused by the mining script.
+
+The master private key must be known in advance because the `signetchallenge` parameter of Bitcoin Knots has to be hardcoded.
+The value we chose for the challenge is the Taproot scriptPubKey corresponding to the address `86h/1h/0h/2/0`, as the block 0 has a special coinbase that cannot be spent.
+
+
 # References
 
 ## Guides
