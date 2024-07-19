@@ -88,6 +88,21 @@ $ docker compose down -v
 ```
 
 
+## Electrs `signet_magic` parameter
+
+The magic bytes for a signet blockchain are derived from the `signetchallenge` parameter, so they change on each signet.
+They are printed in one of the first log lines of Knots when it starts.
+
+```shell
+$ docker compose logs knots | less
+knots-1  | 2024-07-19T20:52:32Z Feeding 38539 bytes of environment data into RNG
+knots-1  | 2024-07-19T20:52:32Z Signet with challenge 51202527a1e6ac01f40d62fd6d325739414c3eb1fe94abe372d1989eadf58e895a2d
+knots-1  | 2024-07-19T20:52:32Z Bitcoin Knots version v27.1.knots20240621 (release build)
+knots-1  | 2024-07-19T20:52:32Z Signet derived magic (message start): 313e47cc
+...
+```
+
+
 ## Wallet Organization
 
 The `wallet-setup` step has been carefully designed to create a wallet with these characteristics:
