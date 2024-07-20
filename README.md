@@ -129,6 +129,9 @@ The mining script will send each reward to addresses from the third descriptor c
 Bitcoin Knots is capable of spending UTXOs belonging to any of the three descriptors, but when sending bitcoin to itself it will generally do it an address of the first descriptor.
 Similarly, it will use addresses from the second descriptor as change addresses.
 
+The tpub descriptor for the miner can be obtained with `bitcoin-cli listdescriptors` after having imported the `86h/1h/0h/2/*` tprv.
+The fingerprint and derivation path hints inside square brackets at the start of the descriptor are not necessary.
+
 If we didn't have a third descriptor for the mining rewards, addresses retrieved manually with `bitcoin-cli getnewaddress` would
 eventually be reused by the mining script.
 
