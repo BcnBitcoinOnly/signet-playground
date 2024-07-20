@@ -20,9 +20,9 @@ services:
       - -c
       - |
         bitcoin-cli -rpcconnect=$${RPC_ADDR} -named createwallet wallet_name=$${WALLET_NAME} blank=true avoid_reuse=true load_on_startup=true
-        bitcoin-cli -rpcconnect=$${RPC_ADDR} -named importdescriptors requests='[{"desc":"tr(tprv8ZgxMBicQKsPdksbPS6u4aLDgjkt5LWM3vDscWSQKCTPsgKiekL3XiTb5HUHgyyr6e3pTn4JUcZUnPdAbbp3qtUmwmvAYwJHrJQiPMBMpum/86h/1h/0h/0/*)#ale2lp6q","timestamp":"now","active":true,"internal":false}]'
-        bitcoin-cli -rpcconnect=$${RPC_ADDR} -named importdescriptors requests='[{"desc":"tr(tprv8ZgxMBicQKsPdksbPS6u4aLDgjkt5LWM3vDscWSQKCTPsgKiekL3XiTb5HUHgyyr6e3pTn4JUcZUnPdAbbp3qtUmwmvAYwJHrJQiPMBMpum/86h/1h/0h/1/*)#vtutz52c","timestamp":"now","active":true,"internal":true}]'
-        bitcoin-cli -rpcconnect=$${RPC_ADDR} -named importdescriptors requests='[{"desc":"tr(tprv8ZgxMBicQKsPdksbPS6u4aLDgjkt5LWM3vDscWSQKCTPsgKiekL3XiTb5HUHgyyr6e3pTn4JUcZUnPdAbbp3qtUmwmvAYwJHrJQiPMBMpum/86h/1h/0h/2/*)#k7ngvzne","timestamp":"now","active":false,"internal":true}]'
+        bitcoin-cli -rpcconnect=$${RPC_ADDR} importdescriptors '[{"desc":"tr(tprv8ZgxMBicQKsPdksbPS6u4aLDgjkt5LWM3vDscWSQKCTPsgKiekL3XiTb5HUHgyyr6e3pTn4JUcZUnPdAbbp3qtUmwmvAYwJHrJQiPMBMpum/86h/1h/0h/0/*)#ale2lp6q","timestamp":"now","active":true,"internal":false}]'
+        bitcoin-cli -rpcconnect=$${RPC_ADDR} importdescriptors '[{"desc":"tr(tprv8ZgxMBicQKsPdksbPS6u4aLDgjkt5LWM3vDscWSQKCTPsgKiekL3XiTb5HUHgyyr6e3pTn4JUcZUnPdAbbp3qtUmwmvAYwJHrJQiPMBMpum/86h/1h/0h/1/*)#vtutz52c","timestamp":"now","active":true,"internal":true}]'
+        bitcoin-cli -rpcconnect=$${RPC_ADDR} importdescriptors '[{"desc":"tr(tprv8ZgxMBicQKsPdksbPS6u4aLDgjkt5LWM3vDscWSQKCTPsgKiekL3XiTb5HUHgyyr6e3pTn4JUcZUnPdAbbp3qtUmwmvAYwJHrJQiPMBMpum/86h/1h/0h/2/*)#k7ngvzne","timestamp":"now","active":false,"internal":true}]'
     volumes:
       - ./knots.conf:/home/bitcoin/.bitcoin/bitcoin.conf
 
