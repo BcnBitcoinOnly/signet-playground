@@ -14,22 +14,25 @@ services:
     environment:
       - RPC_ADDR=knots
       - WALLET_NAME=BBO
+      - RECV_XPRV=tr(tprv8ZgxMBicQKsPdksbPS6u4aLDgjkt5LWM3vDscWSQKCTPsgKiekL3XiTb5HUHgyyr6e3pTn4JUcZUnPdAbbp3qtUmwmvAYwJHrJQiPMBMpum/86h/1h/0h/0/*)#ale2lp6q
+      - CHNG_XPRV=tr(tprv8ZgxMBicQKsPdksbPS6u4aLDgjkt5LWM3vDscWSQKCTPsgKiekL3XiTb5HUHgyyr6e3pTn4JUcZUnPdAbbp3qtUmwmvAYwJHrJQiPMBMpum/86h/1h/0h/1/*)#vtutz52c
+      - MINE_XPRV=tr(tprv8ZgxMBicQKsPdksbPS6u4aLDgjkt5LWM3vDscWSQKCTPsgKiekL3XiTb5HUHgyyr6e3pTn4JUcZUnPdAbbp3qtUmwmvAYwJHrJQiPMBMpum/86h/1h/0h/2/*)#k7ngvzne
     entrypoint:
       - sh
       - -x
       - -c
       - |
         bitcoin-cli -rpcconnect=$${RPC_ADDR} -named createwallet wallet_name=$${WALLET_NAME} blank=true avoid_reuse=true load_on_startup=true
-        bitcoin-cli -rpcconnect=$${RPC_ADDR} importdescriptors '[{"desc":"tr(tprv8ZgxMBicQKsPdksbPS6u4aLDgjkt5LWM3vDscWSQKCTPsgKiekL3XiTb5HUHgyyr6e3pTn4JUcZUnPdAbbp3qtUmwmvAYwJHrJQiPMBMpum/86h/1h/0h/0/*)#ale2lp6q","timestamp":"now","active":true,"internal":false}]'
-        bitcoin-cli -rpcconnect=$${RPC_ADDR} importdescriptors '[{"desc":"tr(tprv8ZgxMBicQKsPdksbPS6u4aLDgjkt5LWM3vDscWSQKCTPsgKiekL3XiTb5HUHgyyr6e3pTn4JUcZUnPdAbbp3qtUmwmvAYwJHrJQiPMBMpum/86h/1h/0h/1/*)#vtutz52c","timestamp":"now","active":true,"internal":true}]'
-        bitcoin-cli -rpcconnect=$${RPC_ADDR} importdescriptors '[{"desc":"tr(tprv8ZgxMBicQKsPdksbPS6u4aLDgjkt5LWM3vDscWSQKCTPsgKiekL3XiTb5HUHgyyr6e3pTn4JUcZUnPdAbbp3qtUmwmvAYwJHrJQiPMBMpum/86h/1h/0h/2/*)#k7ngvzne","timestamp":"now","active":false,"internal":true}]'
+        bitcoin-cli -rpcconnect=$${RPC_ADDR} importdescriptors '[{"desc":"'$${RECV_XPRV}'","range":999,"timestamp":"now","active":true,"internal":false}]'
+        bitcoin-cli -rpcconnect=$${RPC_ADDR} importdescriptors '[{"desc":"'$${CHNG_XPRV}'","range":999,"timestamp":"now","active":true,"internal":true}]'
+        bitcoin-cli -rpcconnect=$${RPC_ADDR} importdescriptors '[{"desc":"'$${MINE_XPRV}'","range":999,"timestamp":"now","active":false,"internal":true}]'
     volumes:
       - ./knots.conf:/home/bitcoin/.bitcoin/bitcoin.conf
 
   miner:
     image: 1maa/bitcoin:v27.1.knots20240621
     environment:
-      - REWARDS_DESCRIPTOR=tr(tpubDCZH8j9YS7HgDkiyC3cXbCKLCLk5j7mN6aTShpB3pF7bs9EXuctzTMD76UQDemvi9PZRYEnPHH8exJhFwR7pBVkxYwUquNWCk9DZk9qyshZ/2/*)#5eqky29x
+      - MINE_XPUB=tr(tpubDCZH8j9YS7HgDkiyC3cXbCKLCLk5j7mN6aTShpB3pF7bs9EXuctzTMD76UQDemvi9PZRYEnPHH8exJhFwR7pBVkxYwUquNWCk9DZk9qyshZ/2/*)#5eqky29x
       - RPC_ADDR=knots
       - RPC_PWD=knots
       - RPC_USER=knots
@@ -37,18 +40,18 @@ services:
       - sh
       - -x
       - -c
-      - miner --cli="bitcoin-cli -rpcuser=$${RPC_USER} -rpcpassword=$${RPC_PWD} -rpcconnect=$${RPC_ADDR}" generate --descriptor $${REWARDS_DESCRIPTOR} --grind-cmd="bitcoin-util grind" --min-nbits --ongoing
+      - miner --cli="bitcoin-cli -rpcuser=$${RPC_USER} -rpcpassword=$${RPC_PWD} -rpcconnect=$${RPC_ADDR}" generate --descriptor $${MINE_XPUB} --grind-cmd="bitcoin-util grind" --min-nbits --ongoing
     restart: on-failure
 
-  electrs:
-    image: 1maa/electrs:latest
-    command: --conf /etc/electrs.conf
+  fulcrum:
+    image: cculianu/fulcrum:v1.11.0
+    command: Fulcrum /etc/fulcrum.conf
     ports:
       - 127.0.0.1:60601:60601
     restart: on-failure
     volumes:
-      - ./electrs.conf:/etc/electrs.conf
-      - electrs_data:/var/lib/electrs
+      - ./fulcrum.conf:/etc/fulcrum.conf
+      - fulcrum_data:/data
 
   mempool-web:
     image: mempool/frontend:v3.0.0-alpha5
@@ -74,7 +77,7 @@ services:
       - DATABASE_HOST=mariadb
       - DATABASE_PASSWORD=mempool
       - DATABASE_USERNAME=mempool
-      - ELECTRUM_HOST=electrs
+      - ELECTRUM_HOST=fulcrum
       - ELECTRUM_PORT=60601
       - ELECTRUM_TLS_ENABLED=false
       - MEMPOOL_BACKEND=electrum
@@ -117,7 +120,7 @@ services:
     restart: on-failure
 
 volumes:
-  electrs_data:
+  fulcrum_data:
   knots_data:
   mariadb_data:
   redis_data:

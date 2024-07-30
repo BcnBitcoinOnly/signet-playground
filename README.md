@@ -5,7 +5,7 @@ It consists of:
 
 * Signet node
 * Signet miner
-* [Electrs](https://github.com/romanz/electrs) server
+* [Fulcrum](https://github.com/cculianu/Fulcrum) server
 * [Mempool](https://github.com/mempool/mempool) explorer
 * [Faucet](https://github.com/BcnBitcoinOnly/bbo-faucet) website
 
@@ -15,11 +15,11 @@ Recent Docker version with the Compose v2 plugin (i.e. `docker compose` instead 
 
 ## Setup
 
-Start Knots, Electrs, MariaDB, Redis and the Faucet website.
-Since Knots is booting in custom signet mode Knots and Electrs will finish their setup almost immediately, as there is no blockchain to download.
+Start Knots, Fulcrum, MariaDB, Redis and the Faucet website.
+Since Knots is booting in custom signet mode Knots and Fulcrum will finish their setup almost immediately, as there is no blockchain to download.
 
 ```bash
-$ docker compose up -d knots electrs mariadb redis faucet
+$ docker compose up -d knots fulcrum mariadb redis faucet
 ```
 
 Now run a one-time process that will store in Knots' wallet the private key that is used for the signet challenge:
@@ -45,7 +45,7 @@ Browse the Signet chain at http://localhost:8080
 
 ### Sparrow
 
-Connect your Sparrow Wallet to Electrs:
+Connect your Sparrow Wallet to Fulcrum:
 
 1. Tools > Restart in Network > Signet
 2. File > Preferences > Server > Private Electrum > localhost:60601, no SSL, no Tor proxy.
@@ -85,21 +85,6 @@ Stop and remove all containers and data volumes with the usual Docker Compose co
 
 ```bash
 $ docker compose down -v
-```
-
-
-## Electrs `signet_magic` parameter
-
-The magic bytes for a signet blockchain are derived from the `signetchallenge` parameter, so they change on each signet.
-They are printed in one of the first log lines of Knots when it starts.
-
-```shell
-$ docker compose logs knots | less
-knots-1  | 2024-07-19T20:52:32Z Feeding 38539 bytes of environment data into RNG
-knots-1  | 2024-07-19T20:52:32Z Signet with challenge 51202527a1e6ac01f40d62fd6d325739414c3eb1fe94abe372d1989eadf58e895a2d
-knots-1  | 2024-07-19T20:52:32Z Bitcoin Knots version v27.1.knots20240621 (release build)
-knots-1  | 2024-07-19T20:52:32Z Signet derived magic (message start): 313e47cc
-...
 ```
 
 
@@ -153,4 +138,3 @@ The value we chose for the challenge is the Taproot scriptPubKey corresponding t
 
 * [1maa/bitcoin:v27.1.knots20240621](https://github.com/BcnBitcoinOnly/docker-knots/blob/master/Dockerfile)
 * [1maa/bbo-faucet:latest](https://github.com/BcnBitcoinOnly/bbo-faucet/blob/master/Dockerfile)
-* [1maa/electrs:latest](https://github.com/1ma/dockertronics/blob/master/electrs/Dockerfile)
