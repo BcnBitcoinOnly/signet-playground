@@ -2,7 +2,7 @@ name: signet
 
 services:
   knots:
-    image: 1maa/bitcoin:v27.1.knots20240621
+    image: 1maa/bitcoin:v27.1.knots20240801
     command: -conf=/home/bitcoin/.bitcoin/bitcoin.conf
     restart: on-failure
     volumes:
@@ -10,7 +10,7 @@ services:
       - knots_data:/home/bitcoin/.bitcoin
 
   wallet-setup:
-    image: 1maa/bitcoin:v27.1.knots20240621
+    image: 1maa/bitcoin:v27.1.knots20240801
     environment:
       - RPC_ADDR=knots
       - WALLET_NAME=BBO
@@ -30,7 +30,7 @@ services:
       - ./knots.conf:/home/bitcoin/.bitcoin/bitcoin.conf
 
   miner:
-    image: 1maa/bitcoin:v27.1.knots20240621
+    image: 1maa/bitcoin:v27.1.knots20240801
     environment:
       - MINE_XPUB=tr(tpubDCZH8j9YS7HgDkiyC3cXbCKLCLk5j7mN6aTShpB3pF7bs9EXuctzTMD76UQDemvi9PZRYEnPHH8exJhFwR7pBVkxYwUquNWCk9DZk9qyshZ/2/*)#5eqky29x
       - RPC_ADDR=knots
@@ -54,7 +54,7 @@ services:
       - fulcrum_data:/data
 
   mempool-web:
-    image: mempool/frontend:v3.0.0-alpha5
+    image: mempool/frontend:v3.0.0-beta5
     environment:
       - BACKEND_MAINNET_HTTP_HOST=mempool-api
       - FRONTEND_HTTP_PORT=8080
@@ -66,7 +66,7 @@ services:
     restart: on-failure
 
   mempool-api:
-    image: mempool/backend:v3.0.0-alpha5
+    image: mempool/backend:v3.0.0-beta5
     environment:
       - CORE_RPC_HOST=knots
       - CORE_RPC_PASSWORD=knots
