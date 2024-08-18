@@ -26,9 +26,6 @@ Now run a one-time process that will store in Knots' wallet the private key that
 
 ```bash
 $ docker compose run --rm wallet-setup
-{
-  "name": "BBO"
-}
 ```
 
 With the private key stored in Knots you can now start the miner and mempool processes:
@@ -45,7 +42,7 @@ Browse the Signet chain at http://localhost:8080
 
 ### Sparrow
 
-Connect your Sparrow Wallet to Fulcrum:
+Connect your Sparrow Wallet to the signet Fulcrum:
 
 1. Tools > Restart in Network > Signet
 2. File > Preferences > Server > Private Electrum > localhost:60601, no SSL, no Tor proxy.
