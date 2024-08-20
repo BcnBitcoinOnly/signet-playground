@@ -54,7 +54,7 @@ services:
       - fulcrum_data:/data
 
   mempool-web:
-    image: mempool/frontend:v3.0.0-beta5
+    image: mempool/frontend:v3.0.0
     environment:
       - BACKEND_MAINNET_HTTP_HOST=mempool-api
       - FRONTEND_HTTP_PORT=8080
@@ -66,7 +66,7 @@ services:
     restart: on-failure
 
   mempool-api:
-    image: mempool/backend:v3.0.0-beta5
+    image: mempool/backend:v3.0.0
     environment:
       - CORE_RPC_HOST=knots
       - CORE_RPC_PASSWORD=knots
@@ -86,7 +86,7 @@ services:
     restart: on-failure
 
   mariadb:
-    image: mariadb:11.4
+    image: mariadb:11.5
     environment:
       - MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=true
       - MARIADB_DATABASE=mempool
