@@ -4,7 +4,7 @@ services:
   knots:
     image: 1maa/bitcoin:v27.1.knots20240801
     command: -conf=/home/bitcoin/.bitcoin/bitcoin.conf
-    restart: on-failure
+    restart: unless-stopped
     volumes:
       - ./knots.conf:/home/bitcoin/.bitcoin/bitcoin.conf
       - knots_data:/home/bitcoin/.bitcoin
@@ -41,14 +41,14 @@ services:
       - -x
       - -c
       - miner --cli="bitcoin-cli -rpcuser=$${RPC_USER} -rpcpassword=$${RPC_PWD} -rpcconnect=$${RPC_ADDR}" generate --descriptor $${MINE_XPUB} --grind-cmd="bitcoin-util grind" --min-nbits --ongoing
-    restart: on-failure
+    restart: unless-stopped
 
   fulcrum:
     image: cculianu/fulcrum:v1.11.1
     command: Fulcrum /etc/fulcrum.conf
     ports:
       - 127.0.0.1:60601:60601
-    restart: on-failure
+    restart: unless-stopped
     volumes:
       - ./fulcrum.conf:/etc/fulcrum.conf
       - fulcrum_data:/data
@@ -63,7 +63,7 @@ services:
       - SIGNET_ENABLED=true
     ports:
       - 127.0.0.1:8080:8080
-    restart: on-failure
+    restart: unless-stopped
 
   mempool-api:
     image: mempool/backend:v3.0.1
@@ -83,7 +83,7 @@ services:
       - MEMPOOL_BACKEND=electrum
       - MEMPOOL_NETWORK=signet
       - STATISTICS_ENABLED=false
-    restart: on-failure
+    restart: unless-stopped
 
   mariadb:
     image: mariadb:11.5
@@ -96,11 +96,11 @@ services:
       - mariadb_data:/var/lib/mysql
     ports:
       - 127.0.0.1:3306:3306
-    restart: on-failure
+    restart: unless-stopped
 
   redis:
     image: redis:7-alpine
-    restart: on-failure
+    restart: unless-stopped
     volumes:
       - redis_data:/data
 
@@ -117,7 +117,7 @@ services:
       - FAUCET_FEE_RATE=0.0
     ports:
       - 127.0.0.1:8123:8080
-    restart: on-failure
+    restart: unless-stopped
 
 volumes:
   fulcrum_data:
