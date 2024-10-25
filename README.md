@@ -19,7 +19,7 @@ Start Knots, Fulcrum, MariaDB, Redis and the Faucet website.
 Since Knots is booting in custom signet mode Knots and Fulcrum will finish their setup almost immediately, as there is no blockchain to download.
 
 ```bash
-$ docker compose up -d knots fulcrum mariadb redis faucet
+$ docker compose up -d knots fulcrum mariadb redis
 ```
 
 Now run a one-time process that will store in Knots' wallet the private key that is used for the signet challenge:
@@ -31,7 +31,7 @@ $ docker compose run --rm wallet-setup
 With the private key stored in Knots you can now start the miner and mempool processes:
 
 ```bash
-$ docker compose up -d miner mempool-api mempool-web
+$ docker compose up -d miner mempool-api mempool-web faucet
 ```
 
 ## Testing
