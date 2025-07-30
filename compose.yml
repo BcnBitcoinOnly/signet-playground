@@ -2,7 +2,7 @@ name: signet
 
 services:
   knots:
-    image: 1maa/bitcoin:v27.1.knots20240801
+    image: 1maa/bitcoin:v28.1.knots20250305
     command: -conf=/home/bitcoin/.bitcoin/bitcoin.conf
     restart: unless-stopped
     volumes:
@@ -10,7 +10,7 @@ services:
       - knots_data:/home/bitcoin/.bitcoin
 
   wallet-setup:
-    image: 1maa/bitcoin:v27.1.knots20240801
+    image: 1maa/bitcoin:v28.1.knots20250305
     environment:
       - RPC_ADDR=knots
       - WALLET_NAME=BBO
@@ -30,7 +30,7 @@ services:
       - ./knots.conf:/home/bitcoin/.bitcoin/bitcoin.conf
 
   miner:
-    image: 1maa/bitcoin:v27.1.knots20240801
+    image: 1maa/bitcoin:v28.1.knots20250305
     environment:
       - MINE_XPUB=tr(tpubDCZH8j9YS7HgDkiyC3cXbCKLCLk5j7mN6aTShpB3pF7bs9EXuctzTMD76UQDemvi9PZRYEnPHH8exJhFwR7pBVkxYwUquNWCk9DZk9qyshZ/2/*)#5eqky29x
       - RPC_ADDR=knots
@@ -44,7 +44,7 @@ services:
     restart: unless-stopped
 
   fulcrum:
-    image: cculianu/fulcrum:v1.11.1
+    image: cculianu/fulcrum:v1.12.0.1
     command: Fulcrum /etc/fulcrum.conf
     ports:
       - 127.0.0.1:60601:60601
@@ -54,7 +54,7 @@ services:
       - fulcrum_data:/data
 
   mempool-web:
-    image: mempool/frontend:v3.0.1
+    image: mempool/frontend:v3.2.1
     environment:
       - BACKEND_MAINNET_HTTP_HOST=mempool-api
       - FRONTEND_HTTP_PORT=8080
@@ -66,7 +66,7 @@ services:
     restart: unless-stopped
 
   mempool-api:
-    image: mempool/backend:v3.0.1
+    image: mempool/backend:v3.2.1
     environment:
       - CORE_RPC_HOST=knots
       - CORE_RPC_PASSWORD=knots
@@ -86,7 +86,7 @@ services:
     restart: unless-stopped
 
   mariadb:
-    image: mariadb:11.5
+    image: mariadb:12.0-rc
     environment:
       - MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=true
       - MARIADB_DATABASE=mempool
@@ -99,7 +99,7 @@ services:
     restart: unless-stopped
 
   redis:
-    image: redis:7-alpine
+    image: redis:8-alpine
     restart: unless-stopped
     volumes:
       - redis_data:/data
