@@ -3,12 +3,27 @@ name: signet
 services:
   knots:
     image: 1maa/bitcoin:v28.1.knots20250305
+    command: >
+      -chain=signet
+      -rpcallowip=0.0.0.0/0
+      -rpcbind=0.0.0.0
+      -listenonion=0
+      -rpccookiefile=/var/tmp/.cookie
+      -rpccookieperms=all
+      -txindex=1
+      -signetchallenge=5120f313278de4d562561245e17fb3d0d71b697923f3c27e39e44b108622fd0c56f2
+      -addresstype=bech32m
+      -walletimplicitsegwit=1
+      -blockmintxfee=0.0
+      -minrelaytxfee=0.0
+      -mintxfee=0.0
     healthcheck:
-      test: netstat -ltn | grep 38332 > /dev/null
+      test: test -f /var/tmp/.cookie
       start_interval: 125ms
       start_period: 500ms
     restart: unless-stopped
     volumes:
+      - cookie_dir:/var/tmp
       - ./knots.conf:/home/bitcoin/.bitcoin/bitcoin.conf
       - knots_data:/home/bitcoin/.bitcoin
 
@@ -18,7 +33,6 @@ services:
       knots:
         condition: service_healthy
     environment:
-      - RPC_ADDR=knots
       - WALLET_NAME=BBO
       - RECV_XPRV=tr(tprv8ZgxMBicQKsPdksbPS6u4aLDgjkt5LWM3vDscWSQKCTPsgKiekL3XiTb5HUHgyyr6e3pTn4JUcZUnPdAbbp3qtUmwmvAYwJHrJQiPMBMpum/86h/1h/0h/0/*)#ale2lp6q
       - CHNG_XPRV=tr(tprv8ZgxMBicQKsPdksbPS6u4aLDgjkt5LWM3vDscWSQKCTPsgKiekL3XiTb5HUHgyyr6e3pTn4JUcZUnPdAbbp3qtUmwmvAYwJHrJQiPMBMpum/86h/1h/0h/1/*)#vtutz52c
@@ -28,13 +42,13 @@ services:
       - -x
       - -c
       - |
-        bitcoin-cli -rpcconnect=$${RPC_ADDR} -named createwallet wallet_name=$${WALLET_NAME} blank=true avoid_reuse=true load_on_startup=true
-        bitcoin-cli -rpcconnect=$${RPC_ADDR} importdescriptors '[{"desc":"'$${RECV_XPRV}'","range":999,"timestamp":"now","active":true,"internal":false}]'
-        bitcoin-cli -rpcconnect=$${RPC_ADDR} importdescriptors '[{"desc":"'$${CHNG_XPRV}'","range":999,"timestamp":"now","active":true,"internal":true}]'
-        bitcoin-cli -rpcconnect=$${RPC_ADDR} importdescriptors '[{"desc":"'$${MINE_XPRV}'","range":999,"timestamp":"now","active":false,"internal":true}]'
+        bitcoin-cli -signet -rpccookiefile=/var/tmp/.cookie -rpcconnect=knots -named createwallet wallet_name=$${WALLET_NAME} blank=true avoid_reuse=true load_on_startup=true
+        bitcoin-cli -signet -rpccookiefile=/var/tmp/.cookie -rpcconnect=knots importdescriptors '[{"desc":"'$${RECV_XPRV}'","range":999,"timestamp":"now","active":true,"internal":false}]'
+        bitcoin-cli -signet -rpccookiefile=/var/tmp/.cookie -rpcconnect=knots importdescriptors '[{"desc":"'$${CHNG_XPRV}'","range":999,"timestamp":"now","active":true,"internal":true}]'
+        bitcoin-cli -signet -rpccookiefile=/var/tmp/.cookie -rpcconnect=knots importdescriptors '[{"desc":"'$${MINE_XPRV}'","range":999,"timestamp":"now","active":false,"internal":true}]'
     restart: no
     volumes:
-      - ./knots.conf:/home/bitcoin/.bitcoin/bitcoin.conf
+      - cookie_dir:/var/tmp
 
   miner:
     image: 1maa/bitcoin:v28.1.knots20250305
@@ -43,16 +57,15 @@ services:
         condition: service_started
     environment:
       - MINE_XPUB=tr(tpubDCZH8j9YS7HgDkiyC3cXbCKLCLk5j7mN6aTShpB3pF7bs9EXuctzTMD76UQDemvi9PZRYEnPHH8exJhFwR7pBVkxYwUquNWCk9DZk9qyshZ/2/*)#5eqky29x
-      - RPC_ADDR=knots
-      - RPC_PWD=knots
-      - RPC_USER=knots
     entrypoint:
       - sh
       - -x
       - -c
-      - miner --cli="bitcoin-cli -rpcuser=$${RPC_USER} -rpcpassword=$${RPC_PWD} -rpcconnect=$${RPC_ADDR}" generate --descriptor $${MINE_XPUB} --grind-cmd="bitcoin-util grind" --min-nbits --ongoing
+      - miner --cli="bitcoin-cli -rpccookiefile=/var/tmp/.cookie -rpcconnect=knots" generate --descriptor $${MINE_XPUB} --grind-cmd="bitcoin-util grind" --min-nbits --ongoing
     restart: unless-stopped
     stop_signal: SIGINT
+    volumes:
+      - cookie_dir:/var/tmp
 
   fulcrum:
     image: cculianu/fulcrum:v1.12.0.1
@@ -71,6 +84,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./fulcrum.conf:/etc/fulcrum.conf
+      - cookie_dir:/var/tmp
       - fulcrum_data:/data
 
   mempool-web:
@@ -99,9 +113,9 @@ services:
         condition: service_healthy
     environment:
       - CORE_RPC_HOST=knots
-      - CORE_RPC_PASSWORD=knots
       - CORE_RPC_PORT=38332
-      - CORE_RPC_USERNAME=knots
+      - CORE_RPC_COOKIE=true
+      - CORE_RPC_COOKIE_PATH=/var/tmp/.cookie
       - DATABASE_DATABASE=mempool
       - DATABASE_ENABLED=true
       - DATABASE_HOST=mariadb
@@ -114,6 +128,8 @@ services:
       - MEMPOOL_NETWORK=signet
       - STATISTICS_ENABLED=false
     restart: unless-stopped
+    volumes:
+      - cookie_dir:/var/tmp
 
   mariadb:
     image: mariadb:12.0-rc
@@ -151,9 +167,8 @@ services:
         condition: service_healthy
     environment:
       - FAUCET_REDIS_ENDPOINT=redis:6379
-      - FAUCET_BITCOIN_RPC_ENDPOINT=http://knots:18443
-      - FAUCET_BITCOIN_RPC_USER=knots
-      - FAUCET_BITCOIN_RPC_PASS=knots
+      - FAUCET_BITCOIN_RPC_ENDPOINT=http://knots:38332
+      - FAUCET_BITCOIN_RPC_COOKIE=/var/tmp/.cookie
       - FAUCET_NAME=BBO Signet Playground
       - FAUCET_MAX_ONE_TIME_BTC=50.0
       - FAUCET_USER_SESSION_TTL=2
@@ -165,8 +180,11 @@ services:
     ports:
       - "127.0.0.1:8123:8080"
     restart: unless-stopped
+    volumes:
+      - cookie_dir:/var/tmp
 
 volumes:
+  cookie_dir:
   fulcrum_data:
   knots_data:
   mariadb_data:
