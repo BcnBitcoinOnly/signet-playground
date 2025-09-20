@@ -2,21 +2,30 @@ name: signet
 
 services:
   knots:
-    image: 1maa/bitcoin:v28.1.knots20250305
+    image: 1maa/bitcoin:v29.1.knots20250903
     command: >
       -chain=signet
+      -listenonion=0
+      -signetchallenge=5120f313278de4d562561245e17fb3d0d71b697923f3c27e39e44b108622fd0c56f2
+
       -rpcallowip=0.0.0.0/0
       -rpcbind=0.0.0.0
-      -listenonion=0
       -rpccookiefile=/var/tmp/.cookie
       -rpccookieperms=all
+
+      -blockfilterindex=basic
+      -coinstatsindex=1
       -txindex=1
-      -signetchallenge=5120f313278de4d562561245e17fb3d0d71b697923f3c27e39e44b108622fd0c56f2
-      -addresstype=bech32m
-      -walletimplicitsegwit=1
+
+      -peerblockfilters=1
+      -peerbloomfilters=1
+
       -blockmintxfee=0.0
       -minrelaytxfee=0.0
       -mintxfee=0.0
+
+      -addresstype=bech32m
+      -walletimplicitsegwit=1
     healthcheck:
       test: test -f /var/tmp/.cookie
       start_interval: 125ms
@@ -28,7 +37,7 @@ services:
       - knots_data:/home/bitcoin/.bitcoin
 
   wallet-setup:
-    image: 1maa/bitcoin:v28.1.knots20250305
+    image: 1maa/bitcoin:v29.1.knots20250903
     depends_on:
       knots:
         condition: service_healthy
@@ -51,7 +60,7 @@ services:
       - cookie_dir:/var/tmp
 
   miner:
-    image: 1maa/bitcoin:v28.1.knots20250305
+    image: 1maa/bitcoin:v29.1.knots20250903
     depends_on:
       wallet-setup:
         condition: service_started
@@ -68,7 +77,7 @@ services:
       - cookie_dir:/var/tmp
 
   fulcrum:
-    image: cculianu/fulcrum:v1.12.0.1
+    image: cculianu/fulcrum:v2.0.0
     command: Fulcrum /etc/fulcrum.conf
     depends_on:
       knots:
@@ -88,7 +97,7 @@ services:
       - fulcrum_data:/data
 
   mempool-web:
-    image: mempool/frontend:v3.2.1
+    image: ghcr.io/retropex/mempoolfrontend:v3.3.0-dev2
     depends_on:
       mempool-api:
         condition: service_started
@@ -103,7 +112,7 @@ services:
     restart: unless-stopped
 
   mempool-api:
-    image: mempool/backend:v3.2.1
+    image: ghcr.io/retropex/mempoolbackend:v3.3.0-dev2
     depends_on:
       knots:
         condition: service_healthy
@@ -132,7 +141,7 @@ services:
       - cookie_dir:/var/tmp
 
   mariadb:
-    image: mariadb:12.0-rc
+    image: mariadb:12.0.2
     environment:
       - MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=true
       - MARIADB_DATABASE=mempool
@@ -148,25 +157,25 @@ services:
       - "127.0.0.1:3306:3306"
     restart: unless-stopped
 
-  redis:
+  valkey:
+    image: valkey/valkey:8-alpine
     healthcheck:
-      test: redis-cli ping > /dev/null
+      test: valkey-cli ping > /dev/null
       start_interval: 125ms
       start_period: 500ms
-    image: redis:8-alpine
     restart: unless-stopped
     volumes:
-      - redis_data:/data
+      - valkey_data:/data
 
   faucet:
     image: 1maa/bbo-faucet:latest
     depends_on:
       knots:
         condition: service_healthy
-      redis:
+      valkey:
         condition: service_healthy
     environment:
-      - FAUCET_REDIS_ENDPOINT=redis:6379
+      - FAUCET_REDIS_ENDPOINT=valkey:6379
       - FAUCET_BITCOIN_RPC_ENDPOINT=http://knots:38332
       - FAUCET_BITCOIN_RPC_COOKIE=/var/tmp/.cookie
       - FAUCET_NAME=BBO Signet Playground
@@ -188,4 +197,4 @@ volumes:
   fulcrum_data:
   knots_data:
   mariadb_data:
-  redis_data:
+  valkey_data:

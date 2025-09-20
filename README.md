@@ -119,5 +119,5 @@ The value we chose for the challenge is the Taproot scriptPubKey corresponding t
 
 ## Docker images
 
-* [1maa/bitcoin:v28.1.knots20250305](https://github.com/BcnBitcoinOnly/docker-knots/blob/master/Dockerfile)
+* [1maa/bitcoin:v29.1.knots20250903](https://github.com/BcnBitcoinOnly/docker-knots/blob/master/Dockerfile)
 * [1maa/bbo-faucet:latest](https://github.com/BcnBitcoinOnly/bbo-faucet/blob/master/Dockerfile)
