@@ -186,6 +186,7 @@ services:
       - FAUCET_GLOBAL_SESSION_MAX_BTC=5000.0
       - FAUCET_MEMPOOL_URL=http://localhost:8080
       - FAUCET_FEE_RATE=0.0
+    platform: linux/amd64
     ports:
       - "127.0.0.1:8123:8080"
     restart: unless-stopped
