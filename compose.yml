@@ -63,7 +63,7 @@ services:
     image: 1maa/bitcoin:v29.1.knots20250903
     depends_on:
       wallet-setup:
-        condition: service_started
+        condition: service_completed_successfully
     environment:
       - MINE_XPUB=tr(tpubDCZH8j9YS7HgDkiyC3cXbCKLCLk5j7mN6aTShpB3pF7bs9EXuctzTMD76UQDemvi9PZRYEnPHH8exJhFwR7pBVkxYwUquNWCk9DZk9qyshZ/2/*)#5eqky29x
     entrypoint:
