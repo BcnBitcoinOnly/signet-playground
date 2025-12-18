@@ -36,29 +36,21 @@ Connect your Sparrow Wallet to the signet Fulcrum:
 
 ### bitcoin-cli
 
-Interact directly with the node via the command line by running the `bitcoin-cli` of the `knots` container:
+Interact directly with the node via the command line by running the `bitcoin-cli` of the `node` container:
 
 ```shell
-$ docker compose exec knots bitcoin-cli -getinfo
-Chain: signet
-Blocks: 101
-Headers: 101
-Verification progress: 100.0000%
-Difficulty: 0.001126515290698186
+$ docker compose exec node bitcoin-cli --version
+Bitcoin Knots RPC client version v29.2.knots20251110
+Copyright (C) 2009-2025 The Bitcoin Knots developers
+Copyright (C) 2009-2025 The Bitcoin Core developers
 
-Network: in 1, out 0, total 1
-Version: 260100
-Time offset (s): 0
-Proxies: n/a
-Min tx relay fee rate (BTC/kvB): 0.00001000
+Please contribute if you find Bitcoin Knots useful. Visit
+<https://bitcoinknots.org/> for further information about the software.
+The source code is available from <https://github.com/bitcoinknots/bitcoin>.
 
-Wallet: BBO
-Keypool size: 1000
-Transaction fee rate (-paytxfee) (BTC/kvB): 0.00000000
-
-Balance: 50.00000000
-
-Warnings: (none)
+This is experimental software.
+Distributed under the MIT software license, see the accompanying file COPYING
+or <https://opensource.org/licenses/MIT>
 ```
 
 
@@ -119,5 +111,5 @@ The value we chose for the challenge is the Taproot scriptPubKey corresponding t
 
 ## Docker images
 
-* [1maa/bitcoin:v29.2.knots20251110](https://github.com/BcnBitcoinOnly/docker-knots/blob/master/Dockerfile)
+* [1maa/bitcoin:latest](https://github.com/BcnBitcoinOnly/docker-knots/blob/master/Dockerfile)
 * [1maa/bbo-faucet:latest](https://github.com/BcnBitcoinOnly/bbo-faucet/blob/master/Dockerfile)

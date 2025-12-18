@@ -1,7 +1,7 @@
 name: signet
 
 services:
-  knots:
+  node:
     image: 1maa/bitcoin:latest
     command: >
       -chain=signet
@@ -32,14 +32,14 @@ services:
       start_period: 500ms
     restart: unless-stopped
     volumes:
+      - ./bitcoin.conf:/home/bitcoin/.bitcoin/bitcoin.conf
       - cookie_dir:/var/tmp
-      - ./knots.conf:/home/bitcoin/.bitcoin/bitcoin.conf
-      - knots_data:/home/bitcoin/.bitcoin
+      - node_data:/home/bitcoin/.bitcoin
 
   wallet-setup:
     image: 1maa/bitcoin:latest
     depends_on:
-      knots:
+      node:
         condition: service_healthy
     environment:
       - WALLET_NAME=BBO
@@ -51,10 +51,10 @@ services:
       - -x
       - -c
       - |
-        bitcoin-cli -signet -rpccookiefile=/var/tmp/.cookie -rpcconnect=knots -named createwallet wallet_name=$${WALLET_NAME} blank=true avoid_reuse=true load_on_startup=true
-        bitcoin-cli -signet -rpccookiefile=/var/tmp/.cookie -rpcconnect=knots importdescriptors '[{"desc":"'$${RECV_XPRV}'","range":999,"timestamp":"now","active":true,"internal":false}]'
-        bitcoin-cli -signet -rpccookiefile=/var/tmp/.cookie -rpcconnect=knots importdescriptors '[{"desc":"'$${CHNG_XPRV}'","range":999,"timestamp":"now","active":true,"internal":true}]'
-        bitcoin-cli -signet -rpccookiefile=/var/tmp/.cookie -rpcconnect=knots importdescriptors '[{"desc":"'$${MINE_XPRV}'","range":999,"timestamp":"now","active":false,"internal":true}]'
+        bitcoin-cli -signet -rpccookiefile=/var/tmp/.cookie -rpcconnect=node -named createwallet wallet_name=$${WALLET_NAME} blank=true avoid_reuse=true load_on_startup=true
+        bitcoin-cli -signet -rpccookiefile=/var/tmp/.cookie -rpcconnect=node importdescriptors '[{"desc":"'$${RECV_XPRV}'","range":999,"timestamp":"now","active":true,"internal":false}]'
+        bitcoin-cli -signet -rpccookiefile=/var/tmp/.cookie -rpcconnect=node importdescriptors '[{"desc":"'$${CHNG_XPRV}'","range":999,"timestamp":"now","active":true,"internal":true}]'
+        bitcoin-cli -signet -rpccookiefile=/var/tmp/.cookie -rpcconnect=node importdescriptors '[{"desc":"'$${MINE_XPRV}'","range":999,"timestamp":"now","active":false,"internal":true}]'
     restart: no
     volumes:
       - cookie_dir:/var/tmp
@@ -65,7 +65,7 @@ services:
       wallet-setup:
         condition: service_completed_successfully
     environment:
-      - CLI_CMD_ARGS=-rpccookiefile=/var/tmp/.cookie -rpcconnect=knots
+      - CLI_CMD_ARGS=-rpccookiefile=/var/tmp/.cookie -rpcconnect=node
       - MINING_XPUB=tr(tpubDCZH8j9YS7HgDkiyC3cXbCKLCLk5j7mN6aTShpB3pF7bs9EXuctzTMD76UQDemvi9PZRYEnPHH8exJhFwR7pBVkxYwUquNWCk9DZk9qyshZ/2/*)#5eqky29x
     restart: unless-stopped
     volumes:
@@ -75,7 +75,7 @@ services:
     image: cculianu/fulcrum:v2.1.0
     command: Fulcrum /etc/fulcrum.conf
     depends_on:
-      knots:
+      node:
         condition: service_healthy
       miner:
         condition: service_started
@@ -109,14 +109,14 @@ services:
   mempool-api:
     image: ghcr.io/retropex/mempoolbackend:v3.3.0-dev2
     depends_on:
-      knots:
+      node:
         condition: service_healthy
       fulcrum:
         condition: service_healthy
       mariadb:
         condition: service_healthy
     environment:
-      - CORE_RPC_HOST=knots
+      - CORE_RPC_HOST=node
       - CORE_RPC_PORT=38332
       - CORE_RPC_COOKIE=true
       - CORE_RPC_COOKIE_PATH=/var/tmp/.cookie
@@ -165,13 +165,13 @@ services:
   faucet:
     image: 1maa/bbo-faucet:latest
     depends_on:
-      knots:
+      node:
         condition: service_healthy
       valkey:
         condition: service_healthy
     environment:
       - FAUCET_REDIS_ENDPOINT=valkey:6379
-      - FAUCET_BITCOIN_RPC_ENDPOINT=http://knots:38332
+      - FAUCET_BITCOIN_RPC_ENDPOINT=http://node:38332
       - FAUCET_BITCOIN_RPC_COOKIE=/var/tmp/.cookie
       - FAUCET_NAME=BBO Signet Playground
       - FAUCET_MAX_ONE_TIME_BTC=50.0
@@ -190,6 +190,6 @@ services:
 volumes:
   cookie_dir:
   fulcrum_data:
-  knots_data:
   mariadb_data:
+  node_data:
   valkey_data:
