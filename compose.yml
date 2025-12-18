@@ -2,7 +2,7 @@ name: signet
 
 services:
   knots:
-    image: 1maa/bitcoin:v29.2.knots20251110
+    image: 1maa/bitcoin:latest
     command: >
       -chain=signet
       -listenonion=0
@@ -37,7 +37,7 @@ services:
       - knots_data:/home/bitcoin/.bitcoin
 
   wallet-setup:
-    image: 1maa/bitcoin:v29.2.knots20251110
+    image: 1maa/bitcoin:latest
     depends_on:
       knots:
         condition: service_healthy
@@ -60,19 +60,14 @@ services:
       - cookie_dir:/var/tmp
 
   miner:
-    image: 1maa/bitcoin:v29.2.knots20251110
+    image: 1maa/bitcoin:signet-miner
     depends_on:
       wallet-setup:
         condition: service_completed_successfully
     environment:
-      - MINE_XPUB=tr(tpubDCZH8j9YS7HgDkiyC3cXbCKLCLk5j7mN6aTShpB3pF7bs9EXuctzTMD76UQDemvi9PZRYEnPHH8exJhFwR7pBVkxYwUquNWCk9DZk9qyshZ/2/*)#5eqky29x
-    entrypoint:
-      - sh
-      - -x
-      - -c
-      - miner --cli="bitcoin-cli -rpccookiefile=/var/tmp/.cookie -rpcconnect=knots" generate --descriptor $${MINE_XPUB} --grind-cmd="bitcoin-util grind" --min-nbits --ongoing
+      - CLI_CMD_ARGS=-rpccookiefile=/var/tmp/.cookie -rpcconnect=knots
+      - MINING_XPUB=tr(tpubDCZH8j9YS7HgDkiyC3cXbCKLCLk5j7mN6aTShpB3pF7bs9EXuctzTMD76UQDemvi9PZRYEnPHH8exJhFwR7pBVkxYwUquNWCk9DZk9qyshZ/2/*)#5eqky29x
     restart: unless-stopped
-    stop_signal: SIGINT
     volumes:
       - cookie_dir:/var/tmp
 
