@@ -92,12 +92,12 @@ services:
       - fulcrum_data:/data
 
   mempool-web:
-    image: ghcr.io/retropex/mempoolfrontend:v3.3.0-dev2
+    image: 1maa/mempool:frontend
     depends_on:
       mempool-api:
         condition: service_started
     environment:
-      - BACKEND_MAINNET_HTTP_HOST=mempool-api
+      - BACKEND_HTTP_HOST=mempool-api
       - FRONTEND_HTTP_PORT=8080
       - MAINNET_ENABLED=false
       - ROOT_NETWORK=signet
@@ -107,7 +107,7 @@ services:
     restart: unless-stopped
 
   mempool-api:
-    image: ghcr.io/retropex/mempoolbackend:v3.3.0-dev2
+    image: 1maa/mempool:backend
     depends_on:
       node:
         condition: service_healthy
@@ -116,21 +116,18 @@ services:
       mariadb:
         condition: service_healthy
     environment:
+      - MEMPOOL_NETWORK=signet
       - CORE_RPC_HOST=node
       - CORE_RPC_PORT=38332
       - CORE_RPC_COOKIE=true
       - CORE_RPC_COOKIE_PATH=/var/tmp/.cookie
-      - DATABASE_DATABASE=mempool
-      - DATABASE_ENABLED=true
-      - DATABASE_HOST=mariadb
-      - DATABASE_PASSWORD=mempool
-      - DATABASE_USERNAME=mempool
       - ELECTRUM_HOST=fulcrum
       - ELECTRUM_PORT=60601
       - ELECTRUM_TLS_ENABLED=false
-      - MEMPOOL_BACKEND=electrum
-      - MEMPOOL_NETWORK=signet
-      - STATISTICS_ENABLED=false
+      - DATABASE_DATABASE=mempool
+      - DATABASE_HOST=mariadb
+      - DATABASE_PASSWORD=mempool
+      - DATABASE_USERNAME=mempool
     restart: unless-stopped
     volumes:
       - cookie_dir:/var/tmp
