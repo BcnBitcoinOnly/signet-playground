@@ -3,10 +3,10 @@
 A dockerized, self-contained Bitcoin [Signet network](https://en.bitcoin.it/wiki/Signet) to study how it works.
 It consists of:
 
-* Signet node
-* Signet miner
+* Signet [node](https://bitcoinknots.org/)
+* Signet [miner](https://github.com/bitcoinknots/bitcoin/tree/29.x-knots/contrib/signet)
 * [Fulcrum](https://github.com/cculianu/Fulcrum) server
-* [Mempool](https://github.com/mempool/mempool) explorer
+* [Mempool](https://github.com/Retropex/mempool) explorer
 * [Faucet](https://github.com/BcnBitcoinOnly/bbo-faucet) website
 
 ## Requirements
@@ -104,12 +104,12 @@ The value we chose for the challenge is the Taproot scriptPubKey corresponding t
 ## Guides
 
 * [BIP-325: Signet](https://bips.xyz/325)
-* [Mempool Docker installation](https://github.com/mempool/mempool/blob/master/docker/README.md)
+* [Mempool Docker installation](https://github.com/Retropex/mempool/blob/master/docker/README.md)
 * [Custom Signet Tutorial](https://en.bitcoin.it/wiki/Signet#Custom_Signet)
 * [How to import an xpriv to a descriptor wallet in bitcoin core?](https://bitcointalk.org/index.php?topic=5483885.msg63602317#msg63602317)
 * [Signet mining is not possible when using descriptor wallet?](https://github.com/bitcoin/bitcoin/issues/28911)
 
 ## Docker images
 
-* [1maa/bitcoin:latest](https://github.com/BcnBitcoinOnly/docker-knots/blob/master/Dockerfile)
+* [1maa/bitcoin:latest](https://github.com/BcnBitcoinOnly/docker-knots/blob/master/cmake/Dockerfile)
 * [1maa/bbo-faucet:latest](https://github.com/BcnBitcoinOnly/bbo-faucet/blob/master/Dockerfile)
