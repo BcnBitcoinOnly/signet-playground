@@ -74,7 +74,7 @@ services:
       - cookie_dir:/var/tmp
 
   fulcrum:
-    image: cculianu/fulcrum:v2.1.0
+    image: cculianu/fulcrum@sha256:71cb19ce9f8318edae1b581a793588c98f55f2f28c12e17327c478ed963ef4e3 # :v2.1.0
     command: Fulcrum /etc/fulcrum.conf
     depends_on:
       node:
@@ -139,7 +139,7 @@ services:
       - valkey_socket:/run/valkey
 
   mariadb:
-    image: mariadb:12.0.2
+    image: mariadb@sha256:607835cd628b78e2876f6a586d0ec37b296c47683b31ef750002d3d17d3d8f7a # :12.0.2
     environment:
       - MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=true
       - MARIADB_DATABASE=mempool
@@ -156,7 +156,7 @@ services:
     restart: unless-stopped
 
   valkey:
-    image: valkey/valkey:9-alpine
+    image: valkey/valkey@sha256:84c96f47ebe197e635cd3ddbe3ab74e8bdf783cf3befbfb1c36387275c1cd5d5 # :9-alpine
     environment:
       - VALKEY_EXTRA_FLAGS=--unixsocket /run/valkey/valkey.sock --unixsocketperm 660
     healthcheck:
