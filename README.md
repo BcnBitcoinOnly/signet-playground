@@ -1,13 +1,23 @@
 # Signet Playground
 
-A dockerized, self-contained Bitcoin [Signet network](https://en.bitcoin.it/wiki/Signet) to study how it works.
-It consists of:
+A dockerized Bitcoin [Signet network](https://en.bitcoin.it/wiki/Signet) for local development or studying how Signet works.
 
-* Signet [node](https://bitcoinknots.org/)
-* Signet [miner](https://github.com/bitcoinknots/bitcoin/tree/29.x-knots/contrib/signet)
-* [Fulcrum](https://github.com/cculianu/Fulcrum) server
-* [Mempool](https://github.com/Retropex/mempool) explorer
-* [Faucet](https://github.com/BcnBitcoinOnly/bbo-faucet) website
+## Services
+
+| Container        | Internal Ports (Docker network)  | External Ports (localhost) | Comments                                                      |
+|------------------|----------------------------------|----------------------------|---------------------------------------------------------------|
+| Bitcoin node     | 8443, 28332, 28333, 38332, 38333 | `N/A`                      | Latest Knots release, ZMQ notifications, 60 second block time |
+| Signet miner     | `N/A`                            | `N/A`                      | Configured to mine a block every 60 seconds                   |
+| Fulcrum          | 8000, 60601                      | 60601                      |                                                               |
+| Faucet website   | 8080                             | 8123                       | [BBO faucet], self-contained PHP webserver                    |
+| Mempool frontend | 2019, 8080                       | 8080                       | [Retropex fork], Caddy webserver                              |
+| Mempool backend  | 8999                             | `N/A`                      | [Retropex fork]                                               |
+| MariaDB          | 3306                             | `N/A`                      | Requirement of Mempool backend                                |
+| Valkey           | 6379                             | `N/A`                      | Redis fork, requirement of faucet and Mempool backend         |
+
+All internal TCP ports that aren't exposed to the host by default can be exposed by adding
+or expanding a `ports` section in `compose.yml` or writing a local `compose.override.yml` file.
+
 
 ## Requirements
 
@@ -113,3 +123,7 @@ The value we chose for the challenge is the Taproot scriptPubKey corresponding t
 
 * [1maa/bitcoin:latest](https://github.com/BcnBitcoinOnly/docker-knots/blob/master/cmake/Dockerfile)
 * [1maa/bbo-faucet:latest](https://github.com/BcnBitcoinOnly/bbo-faucet/blob/master/Dockerfile)
+
+
+[BBO faucet]: github.com/BcnBitcoinOnly/bbo-faucet
+[Retropex fork]: https://github.com/Retropex/mempool
