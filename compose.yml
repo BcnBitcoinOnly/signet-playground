@@ -92,7 +92,7 @@ services:
       - SERVER_BACKEND_ELECTRUM_SERVER=tcp://fulcrum:60601
     ports:
       - "127.0.0.1:60602:60601"
-    restart: no
+    restart: unless-stopped
     volumes:
       - cookie_dir:/var/tmp/datadir
       - frigate_data:/home/frigate/.frigate
