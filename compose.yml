@@ -27,6 +27,8 @@ services:
 
       -addresstype=bech32m
       -walletimplicitsegwit=1
+
+      -zmqpubsequence=tcp://0.0.0.0:28336
     healthcheck:
       test: test -f /var/tmp/.cookie
       start_interval: 125ms
@@ -72,6 +74,28 @@ services:
     restart: unless-stopped
     volumes:
       - cookie_dir:/var/tmp
+
+  frigate:
+    image: 1maa/frigate:latest
+    command: --network signet
+    depends_on:
+      node:
+        condition: service_healthy
+      miner:
+        condition: service_started
+    environment:
+      - CORE_SERVER=http://node:38332
+      - CORE_DATA_DIR=/var/tmp/datadir
+      - CORE_ZMQ_SEQUENCE_ENDPOINT=tcp://node:28336
+      - INDEX_START_HEIGHT=0
+      - SERVER_TCP=tcp://0.0.0.0:60601
+      - SERVER_BACKEND_ELECTRUM_SERVER=tcp://fulcrum:60601
+    ports:
+      - "127.0.0.1:60602:60601"
+    restart: no
+    volumes:
+      - cookie_dir:/var/tmp/datadir
+      - frigate_data:/home/frigate/.frigate
 
   fulcrum:
     image: cculianu/fulcrum@sha256:71cb19ce9f8318edae1b581a793588c98f55f2f28c12e17327c478ed963ef4e3 # :v2.1.0
@@ -193,6 +217,7 @@ services:
 
 volumes:
   cookie_dir:
+  frigate_data:
   fulcrum_data:
   mariadb_data:
   node_data:

@@ -9,6 +9,7 @@ A dockerized Bitcoin [Signet network](https://en.bitcoin.it/wiki/Signet) for loc
 | Bitcoin node     | 8443, 28332, 28333, 38332, 38333 | `N/A`                      | Latest Knots release, ZMQ notifications, 60 second block time |
 | Signet miner     | `N/A`                            | `N/A`                      | Configured to mine a block every 60 seconds                   |
 | Fulcrum          | 8000, 60601                      | 60601                      |                                                               |
+| Frigate          | 60601                            | 60602                      | Augments Fulcrum with Silent Payment support                  |
 | Faucet website   | 8080                             | 8123                       | [BBO faucet], self-contained PHP webserver                    |
 | Mempool frontend | 2019, 8080                       | 8080                       | [Retropex fork], Caddy webserver                              |
 | Mempool backend  | 8999                             | `N/A`                      | [Retropex fork]                                               |
