@@ -2,7 +2,7 @@ name: signet
 
 services:
   node:
-    image: 1maa/bitcoin:latest
+    image: 1maa/bitcoin:latest@sha256:21dead86be96f78ba97269e8be626a9d71249d960b2cfd32b573d201abe2904d
     command: >
       -chain=signet
       -listenonion=0
@@ -40,7 +40,7 @@ services:
       - node_data:/home/bitcoin/.bitcoin
 
   wallet-setup:
-    image: 1maa/bitcoin:latest
+    image: 1maa/bitcoin:latest@sha256:21dead86be96f78ba97269e8be626a9d71249d960b2cfd32b573d201abe2904d
     depends_on:
       node:
         condition: service_healthy
@@ -63,7 +63,7 @@ services:
       - cookie_dir:/var/tmp
 
   miner:
-    image: 1maa/bitcoin:signet-miner
+    image: 1maa/bitcoin:signet-miner@sha256:0e854a695107ebb510ce1de8789e10fa05d9c0e04e0a7b6185fe216d96d6fb84
     depends_on:
       wallet-setup:
         condition: service_completed_successfully
@@ -76,7 +76,7 @@ services:
       - cookie_dir:/var/tmp
 
   frigate:
-    image: 1maa/frigate:latest
+    image: 1maa/frigate:latest@sha256:26703f77dd92f988e3bdb02315f15652d9f9f15dc063c315379a0c3f9ba1495b
     command: --network signet
     depends_on:
       node:
@@ -98,7 +98,7 @@ services:
       - frigate_data:/home/frigate/.frigate
 
   fulcrum:
-    image: cculianu/fulcrum@sha256:71cb19ce9f8318edae1b581a793588c98f55f2f28c12e17327c478ed963ef4e3 # :v2.1.0
+    image: cculianu/fulcrum:v2.1.4@sha256:3de5dc10d6fd331a61adf54bc238bc01d1fc9618f2f763e2454e21b4e6d888b1
     command: Fulcrum /etc/fulcrum.conf
     depends_on:
       node:
@@ -118,7 +118,7 @@ services:
       - fulcrum_data:/data
 
   mempool-web:
-    image: 1maa/mempool.guide:frontend
+    image: 1maa/mempool.guide:frontend@sha256:20bd449f423964b55a0d3e0d5551931ba2ca7f55331d40b3a034395ddba6d4e7
     depends_on:
       mempool-api:
         condition: service_started
@@ -133,7 +133,7 @@ services:
     restart: unless-stopped
 
   mempool-api:
-    image: 1maa/mempool.guide:backend
+    image: 1maa/mempool.guide:backend@sha256:4c13d3912d182c589ce3cde5ec6fb0bbb61facf802de4e8da00dafa1fe4854f8
     depends_on:
       node:
         condition: service_healthy
@@ -163,7 +163,7 @@ services:
       - valkey_socket:/run/valkey
 
   mariadb:
-    image: mariadb@sha256:607835cd628b78e2876f6a586d0ec37b296c47683b31ef750002d3d17d3d8f7a # :12.0.2
+    image: mariadb:12.0.2@sha256:607835cd628b78e2876f6a586d0ec37b296c47683b31ef750002d3d17d3d8f7a
     environment:
       - MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=true
       - MARIADB_DATABASE=mempool
@@ -178,7 +178,7 @@ services:
     restart: unless-stopped
 
   valkey:
-    image: valkey/valkey@sha256:84c96f47ebe197e635cd3ddbe3ab74e8bdf783cf3befbfb1c36387275c1cd5d5 # :9-alpine
+    image: valkey/valkey:9-alpine@sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b
     environment:
       - VALKEY_EXTRA_FLAGS=--unixsocket /run/valkey/valkey.sock --unixsocketperm 660
     healthcheck:
@@ -191,7 +191,7 @@ services:
       - valkey_socket:/run/valkey
 
   faucet:
-    image: 1maa/bbo-faucet:latest
+    image: 1maa/bbo-faucet:latest@sha256:f99003b123d7957f78d4b3050ee585030a524e13b778087d1cacfe1c3f549cd8
     depends_on:
       node:
         condition: service_healthy
@@ -212,6 +212,7 @@ services:
     ports:
       - "127.0.0.1:8123:8080"
     restart: unless-stopped
+    stop_signal: SIGKILL
     volumes:
       - cookie_dir:/var/tmp
 
