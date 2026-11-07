@@ -2,7 +2,7 @@ name: signet
 
 services:
   node:
-    image: 1maa/bitcoin:latest@sha256:21dead86be96f78ba97269e8be626a9d71249d960b2cfd32b573d201abe2904d
+    image: 1maa/bitcoin:latest@sha256:990da01296afad725844bed56d83b17e459b868b288e64e1a8876e04344dbfe1
     command: >
       -chain=signet
       -listenonion=0
@@ -40,7 +40,7 @@ services:
       - node_data:/home/bitcoin/.bitcoin
 
   wallet-setup:
-    image: 1maa/bitcoin:latest@sha256:21dead86be96f78ba97269e8be626a9d71249d960b2cfd32b573d201abe2904d
+    image: 1maa/bitcoin:latest@sha256:990da01296afad725844bed56d83b17e459b868b288e64e1a8876e04344dbfe1
     depends_on:
       node:
         condition: service_healthy
@@ -63,7 +63,7 @@ services:
       - cookie_dir:/var/tmp
 
   miner:
-    image: 1maa/bitcoin:signet-miner@sha256:0e854a695107ebb510ce1de8789e10fa05d9c0e04e0a7b6185fe216d96d6fb84
+    image: 1maa/bitcoin:signet-miner@sha256:3cc10648a68ab4fa31c54a727d7c37deb92a098081ae7f23c9a242e835e06dca
     depends_on:
       wallet-setup:
         condition: service_completed_successfully
@@ -76,7 +76,7 @@ services:
       - cookie_dir:/var/tmp
 
   frigate:
-    image: 1maa/frigate:latest@sha256:26703f77dd92f988e3bdb02315f15652d9f9f15dc063c315379a0c3f9ba1495b
+    image: 1maa/frigate:latest@sha256:c75ec4ae8a40e6517ffe0f2fe1cffb2d4e97e9adeb7b644ca8ab75a8761b50ab
     command: --network signet
     depends_on:
       node:
@@ -118,7 +118,7 @@ services:
       - fulcrum_data:/data
 
   mempool-web:
-    image: 1maa/mempool.guide:frontend@sha256:20bd449f423964b55a0d3e0d5551931ba2ca7f55331d40b3a034395ddba6d4e7
+    image: 1maa/mempool.guide:frontend@sha256:71f3f22b91f9461942f6cb3fdc0271f57bb0c9a6d1af20629487c9caab42ec7c
     depends_on:
       mempool-api:
         condition: service_started
@@ -133,7 +133,7 @@ services:
     restart: unless-stopped
 
   mempool-api:
-    image: 1maa/mempool.guide:backend@sha256:4c13d3912d182c589ce3cde5ec6fb0bbb61facf802de4e8da00dafa1fe4854f8
+    image: 1maa/mempool.guide:backend@sha256:022611e522821924afff1c904426d42320a732839b4b7f05169c2e91a960f7d2
     depends_on:
       node:
         condition: service_healthy
@@ -191,7 +191,7 @@ services:
       - valkey_socket:/run/valkey
 
   faucet:
-    image: 1maa/bbo-faucet:latest@sha256:f99003b123d7957f78d4b3050ee585030a524e13b778087d1cacfe1c3f549cd8
+    image: 1maa/bbo-faucet:latest@sha256:e7ea51bd74875203d45a57ebd3b647762074408917f25069b166aee1c6a7ff4e
     depends_on:
       node:
         condition: service_healthy
