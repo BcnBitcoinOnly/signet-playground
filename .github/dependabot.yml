@@ -1,9 +1,19 @@
 version: 2
+registries:
+  dockerhub:
+    type: docker-registry
+    url: https://registry.hub.docker.com
+    username: 1maa
+    password: ${{ secrets.DOCKER_HUB_PASS }}
 updates:
   - package-ecosystem: "docker-compose"
     directory: "/"
+    registries:
+      - "dockerhub"
     schedule:
       interval: "monthly"
+    cooldown:
+      default-days: 1
     ignore:
       - dependency-name: "*"
         update-types:
